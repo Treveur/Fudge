@@ -80,6 +80,9 @@ end
 
 local getAllImages = function(folder)
 	local images = {}
+	if love.filesystem.getIdentity():len()<1 then
+		error("This project does not have an identity set. Please set \"t.identity\" in \"love.conf\" or use \"love.filesystem.setIdentity()\"")
+	end
 	for i,v in ipairs(love.filesystem.getDirectoryItems(folder)) do
 		table.insert(images, {
 			name = split(v, ".")[1],
@@ -194,6 +197,9 @@ local pack = function(t, mx)
 end
 
 function fudge.import(name)
+	if love.filesystem.getIdentity():len()<1 then
+		error("This project does not have an identity set. Please set \"t.identity\" in \"love.conf\" or use \"love.filesystem.setIdentity()\"")
+	end
 	local self = require(name)
 	setmetatable(self, {__index=fudge_mt})
 	for k,v in pairs(self.pieces) do
@@ -433,6 +439,9 @@ function fudge_mt:setImageFilter(...)
 end
 
 function fudge_mt:export(name, options)
+	if love.filesystem.getIdentity():len()<1 then
+		error("This project does not have an identity set. Please set \"t.identity\" in \"love.conf\" or use \"love.filesystem.setIdentity()\"")
+	end
 	local options = options or {}
 	local image_extension = options.image_extension or "png"
 	self.image:getData():encode(name.."."..image_extension)
