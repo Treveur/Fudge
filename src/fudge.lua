@@ -207,6 +207,10 @@ function fudge.new(folder, options)
 	local options = options or {}
 	local self = setmetatable({},{__index=fudge_mt})
 	self.images = getAllImages(folder)
+  if #self.images == 0 then
+    print("[fudge] failed to create sprite atlas: folder '" .. folder .. "'' doesn't contain any images")
+    return nil
+  end
 	---[[
 	local maxWidth = 0
 	local area = 0
@@ -338,6 +342,18 @@ function fudge.set(option, value)
 end
 
 fudge.draw = monkey_draw
+
+function fudge.addb(...)
+	fudge.current:addb(...)
+end
+
+function fudge.setColorb(...)
+	fudge.current:setColorb(...)
+end
+
+function fudge.setWhiteb()
+	fudge.current:setWhiteb()
+end
 
 function fudge_mt:getPiece(name)
 	if not self.pieces[name] then
