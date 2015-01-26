@@ -78,16 +78,26 @@ local imAABB = function(i1, ox1, oy1, i2, ox2, oy2)
 	)
 end
 
-local getAllImages = function(folder)
+local getAllImages = function(folder, options)
 	local images = {}
 	if love.filesystem.getIdentity():len()<1 then
 		error("This project does not have an identity set. Please set \"t.identity\" in \"love.conf\" or use \"love.filesystem.setIdentity()\"")
 	end
+	local ignore = options.ignore or {}
 	for i,v in ipairs(love.filesystem.getDirectoryItems(folder)) do
-		table.insert(images, {
-			name = split(v, ".")[1],
-			tex = love.graphics.newImage(folder.."/"..v)
-		})
+		local skip = false
+		for _,ig in ipairs(ignore) do
+			if string.find(v, ig) then
+				skip = true
+				break
+			end
+		end
+		if not skip then
+			table.insert(images, {
+				name = split(v, ".")[1],
+				tex = love.graphics.newImage(folder.."/"..v)
+			})
+		end
 		--table.insert(images, love.graphics.newImage(folder.."/"..v))
 		--table.insert(images, love.graphics.newImage(folder.."/"..v))
 	end
@@ -212,11 +222,11 @@ function fudge.new(folder, options)
 	local timeAtStart = love.timer.getTime()
 	local options = options or {}
 	local self = setmetatable({},{__index=fudge_mt})
-	self.images = getAllImages(folder)
-  if #self.images == 0 then
-    print("[fudge] failed to create sprite atlas: folder '" .. folder .. "'' doesn't contain any images")
-    return nil
-  end
+	self.images = getAllImages(folder, options)
+	if #self.images == 0 then
+	print("[fudge] failed to create sprite atlas: folder '" .. folder .. "'' doesn't contain any images")
+	return nil
+	end
 	---[[
 	local maxWidth = 0
 	local area = 0
